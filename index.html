@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dunkin' Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #FF6319;
+      --pink: #DA1884;
+      --dark: #1a1a2e;
+      --card: #ffffff;
+      --bg: #f7f4f0;
+      --text: #1f1f2e;
+      --muted: #7a7a9a;
+      --border: #e8e3dc;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 16px rgba(255,99,25,0.3);
+    }
+
+    .logo {
+      width: 48px; height: 48px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.82);
+      font-weight: 600;
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-icon { font-size: 1.8rem; margin-bottom: 6px; }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* LOG FORM */
+    .log-section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 540px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--orange);
+      background: #fff;
+    }
+
+    textarea { resize: vertical; min-height: 70px; }
+
+    .items-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .item-chip {
+      background: #f0ebe4;
+      border: 2px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .item-chip:hover { border-color: var(--orange); color: var(--orange); }
+    .item-chip.selected {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--pink));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 28px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(255,99,25,0.35);
+      width: 100%;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255,99,25,0.45);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* HISTORY */
+    .history-section { margin-top: 4px; }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .filter-tab {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .filter-tab.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    .visit-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .visit-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      animation: slideIn 0.25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .visit-dot {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--orange), var(--pink));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .visit-meta { flex: 1; }
+    .visit-date {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .visit-items {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .visit-note {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .visit-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .visit-cost {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--orange);
+    }
+    .visit-rating {
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+    .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: #ccc;
+      margin-top: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      transition: color 0.15s;
+    }
+    .delete-btn:hover { color: #e05; }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--muted);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-weight: 700; font-size: 0.95rem; }
+
+    /* FAVORITE BAR */
+    .fav-bar {
+      background: linear-gradient(135deg, var(--orange), var(--pink));
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(255,99,25,0.3);
+    }
+    .fav-bar .icon { font-size: 2rem; }
+    .fav-bar h3 { font-size: 0.75rem; font-weight: 700; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.4px; }
+    .fav-bar p { font-size: 1rem; font-weight: 800; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🍩</div>
+  <div>
+    <h1>Dunkin' Tracker</h1>
+    <p>Log your runs. Track your habits.</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-icon">☕</div>
+      <div class="stat-value" id="totalVisits">0</div>
+      <div class="stat-label">Total Visits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💸</div>
+      <div class="stat-value" id="totalSpent">$0</div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-value" id="thisMonth">0</div>
+      <div class="stat-label">This Month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value" id="avgRating">—</div>
+      <div class="stat-label">Avg Rating</div>
+    </div>
+  </div>
+
+  <!-- FAVORITE ITEM -->
+  <div class="fav-bar" id="favBar" style="display:none">
+    <div class="icon">🏆</div>
+    <div>
+      <h3>Your Most-Ordered Item</h3>
+      <p id="favItem">—</p>
+    </div>
+  </div>
+
+  <!-- LOG FORM -->
+  <div class="log-section">
+    <div class="section-title">➕ Log a Visit</div>
+
+    <div style="margin-bottom:14px">
+      <label>Quick-Pick Items</label>
+      <div class="items-row" id="quickPicks">
+        <span class="item-chip" data-item="Medium Hot Coffee">Medium Hot Coffee</span>
+        <span class="item-chip" data-item="Iced Coffee">Iced Coffee</span>
+        <span class="item-chip" data-item="Cold Brew">Cold Brew</span>
+        <span class="item-chip" data-item="Matcha Latte">Matcha Latte</span>
+        <span class="item-chip" data-item="Glazed Donut">Glazed Donut</span>
+        <span class="item-chip" data-item="Munchkins">Munchkins</span>
+        <span class="item-chip" data-item="Breakfast Sandwich">Breakfast Sandwich</span>
+        <span class="item-chip" data-item="Avocado Toast">Avocado Toast</span>
+        <span class="item-chip" data-item="Hash Browns">Hash Browns</span>
+        <span class="item-chip" data-item="Bagel">Bagel</span>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label>Custom Item / Order Details</label>
+        <input type="text" id="customItem" placeholder="e.g. Large Iced Caramel Latte" />
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="date" id="visitDate" />
+      </div>
+      <div>
+        <label>Total Cost ($)</label>
+        <input type="number" id="visitCost" placeholder="0.00" step="0.01" min="0" />
+      </div>
+      <div>
+        <label>Rating</label>
+        <select id="visitRating">
+          <option value="">— Select rating —</option>
+          <option value="5">⭐⭐⭐⭐⭐ Amazing</option>
+          <option value="4">⭐⭐⭐⭐ Good</option>
+          <option value="3">⭐⭐⭐ Okay</option>
+          <option value="2">⭐⭐ Meh</option>
+          <option value="1">⭐ Bad</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label>Notes (optional)</label>
+      <textarea id="visitNote" placeholder="Extra shot, tried the new seasonal drink, was crowded…"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="logVisit()">Log This Run 🏃</button>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section">
+    <div class="history-header">
+      <div class="section-title" style="margin-bottom:0">📋 Visit History</div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-tab" onclick="setFilter('month', this)">This Month</button>
+        <button class="filter-tab" onclick="setFilter('week', this)">This Week</button>
+      </div>
+    </div>
+    <div class="visit-list" id="visitList"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let visits = [
+    { id: 1, date: '2026-08-25', items: ['Medium Hot Coffee', 'Glazed Donut'], cost: 6.49, rating: 5, note: 'Perfect start to the week!' },
+    { id: 2, date: '2026-08-22', items: ['Iced Coffee'], cost: 3.99, rating: 4, note: '' },
+    { id: 3, date: '2026-08-18', items: ['Cold Brew', 'Munchkins'], cost: 7.25, rating: 5, note: 'Munchkins hit different today' },
+    { id: 4, date: '2026-08-12', items: ['Matcha Latte'], cost: 5.49, rating: 3, note: 'A bit too sweet' },
+    { id: 5, date: '2026-08-05', items: ['Breakfast Sandwich', 'Medium Hot Coffee'], cost: 9.00, rating: 4, note: '' },
+  ];
+  let nextId = 6;
+  let selectedItems = new Set();
+  let activeFilter = 'all';
+
+  // ── Set today's date as default ─────────────────────────────────────────────
+  document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+
+  // ── Quick picks ─────────────────────────────────────────────────────────────
+  document.querySelectorAll('.item-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const item = chip.dataset.item;
+      if (selectedItems.has(item)) {
+        selectedItems.delete(item);
+        chip.classList.remove('selected');
+      } else {
+        selectedItems.add(item);
+        chip.classList.add('selected');
+      }
+    });
+  });
+
+  // ── Log a visit ─────────────────────────────────────────────────────────────
+  function logVisit() {
+    const custom = document.getElementById('customItem').value.trim();
+    const date   = document.getElementById('visitDate').value;
+    const cost   = parseFloat(document.getElementById('visitCost').value) || 0;
+    const rating = parseInt(document.getElementById('visitRating').value) || null;
+    const note   = document.getElementById('visitNote').value.trim();
+
+    const items = [...selectedItems];
+    if (custom) items.push(custom);
+
+    if (!date) { alert('Please pick a date.'); return; }
+    if (items.length === 0) { alert('Select or type at least one item.'); return; }
+
+    visits.unshift({ id: nextId++, date, items, cost, rating, note });
+
+    // Reset
+    selectedItems.clear();
+    document.querySelectorAll('.item-chip.selected').forEach(c => c.classList.remove('selected'));
+    document.getElementById('customItem').value = '';
+    document.getElementById('visitCost').value = '';
+    document.getElementById('visitRating').value = '';
+    document.getElementById('visitNote').value = '';
+    document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+
+    render();
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────────────────
+  function deleteVisit(id) {
+    visits = visits.filter(v => v.id !== id);
+    render();
+  }
+
+  // ── Filter ──────────────────────────────────────────────────────────────────
+  function setFilter(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function filteredVisits() {
+    const now = new Date();
+    return visits.filter(v => {
+      const d = new Date(v.date + 'T12:00:00');
+      if (activeFilter === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      if (activeFilter === 'week') {
+        const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7);
+        return d >= weekAgo;
+      }
+      return true;
+    });
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+  function render() {
+    renderStats();
+    renderFav();
+    renderList();
+  }
+
+  function renderStats() {
+    const now = new Date();
+    const total  = visits.length;
+    const spent  = visits.reduce((s, v) => s + v.cost, 0);
+    const month  = visits.filter(v => {
+      const d = new Date(v.date + 'T12:00:00');
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    const rated  = visits.filter(v => v.rating);
+    const avg    = rated.length ? (rated.reduce((s, v) => s + v.rating, 0) / rated.length).toFixed(1) : '—';
+
+    document.getElementById('totalVisits').textContent = total;
+    document.getElementById('totalSpent').textContent  = '$' + spent.toFixed(2);
+    document.getElementById('thisMonth').textContent   = month;
+    document.getElementById('avgRating').textContent   = avg;
+  }
+
+  function renderFav() {
+    const counts = {};
+    visits.forEach(v => v.items.forEach(i => { counts[i] = (counts[i] || 0) + 1; }));
+    const fav = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    if (fav) {
+      document.getElementById('favItem').textContent = `${fav[0]} (×${fav[1]})`;
+      document.getElementById('favBar').style.display = 'flex';
+    } else {
+      document.getElementById('favBar').style.display = 'none';
+    }
+  }
+
+  function renderList() {
+    const list = document.getElementById('visitList');
+    const data = filteredVisits();
+    if (!data.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">☕</div><p>No visits yet. Log your first Dunkin' run!</p></div>`;
+      return;
+    }
+
+    list.innerHTML = data.map(v => {
+      const stars = v.rating ? '⭐'.repeat(v.rating) : '';
+      const dateStr = new Date(v.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      const emoji = v.items.some(i => i.toLowerCase().includes('coffee') || i.toLowerCase().includes('brew') || i.toLowerCase().includes('latte') || i.toLowerCase().includes('matcha')) ? '☕' : '🍩';
+      return `
+        <div class="visit-card">
+          <div class="visit-dot">${emoji}</div>
+          <div class="visit-meta">
+            <div class="visit-date">${dateStr}</div>
+            <div class="visit-items">${v.items.join(', ')}</div>
+            ${v.note ? `<div class="visit-note">"${v.note}"</div>` : ''}
+          </div>
+          <div class="visit-right">
+            <div class="visit-cost">${v.cost > 0 ? '$' + v.cost.toFixed(2) : 'Free'}</div>
+            <div class="visit-rating">${stars}</div>
+            <button class="delete-btn" onclick="deleteVisit(${v.id})">✕ remove</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  render();
+</script>
+</body>
+</html>
